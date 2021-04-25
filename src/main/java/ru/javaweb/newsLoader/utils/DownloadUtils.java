@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.net.URL;
 
 public class DownloadUtils {
@@ -24,6 +22,7 @@ public class DownloadUtils {
         request.disconnect();
         return (JsonElement) jsonElement;
     }
+
     public static ContentOfApiArticle[] getJsonAsStringFromRequest(String api_url) throws IOException {
         JsonElement jsonElement = getJsonElementFromRequest(api_url);
         String inputString = jsonElement.toString();

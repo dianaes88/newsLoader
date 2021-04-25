@@ -54,12 +54,11 @@ public class ArticleLoader {
             ExecutorService service = Executors.newFixedThreadPool(threadsNumber);
             ConcurrentMap<String, Set<ContentOfApiArticle>> mapSiteSet = new ConcurrentHashMap<>();
 
-            int endNumber = 0;
+            int limit = 0;
             for (int i = 0; i < totalArticleNumber; i = i + articleNumberPerThread - 1) {
-                endNumber = (i + articleNumberPerThread) - 1;
-                endNumber = endNumber <= totalArticleNumber ? endNumber : totalArticleNumber;
+                limit = (limit <= totalArticleNumber - i) ? articleNumberPerThread: totalArticleNumber - i;
 
-                String apiUrs = String.format(apiUrlTemplate, i, endNumber);
+                String apiUrs = String.format(apiUrlTemplate, limit, i);
 
                 service.submit(() -> {
                     String threadName = Thread.currentThread().getName();
