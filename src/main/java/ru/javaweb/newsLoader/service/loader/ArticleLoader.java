@@ -75,8 +75,7 @@ public class ArticleLoader {
                             localdate = (ZonedDateTime.parse(article.getPublished_date(), format)).toLocalDate();
                             System.out.println("Date:" + localdate.toString());
                             date = Date.from(localdate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-                            Article repArticle = new Article(article.getTitle(), article.getNewsSite(), date,
-                                    article.getArticle_text());
+
                             String newsSite = article.getNewsSite();
 
                             // check for the blacklist
@@ -88,16 +87,12 @@ public class ArticleLoader {
                             if (mapSiteSet.keySet().contains(newsSite)) {
                                 mapSiteSet.get(newsSite).add(article);
                             } else {
-                                Set<ContentOfApiArticle> setA = new TreeSet<>(new Comparator<ContentOfApiArticle>() {
-                                    @Override
-                                    public int compare(ContentOfApiArticle c1, ContentOfApiArticle c2) {
-                                        return c1.getPublished_date().compareTo(c2.getPublished_date());
-                                    }
-                                });
+                                Set<ContentOfApiArticle> setA = new TreeSet<>((ContentOfApiArticle c1, ContentOfApiArticle c2) ->
+                                        c1.getPublished_date().compareTo(c2.getPublished_date()));
                                 setA.add(article);
                                 mapSiteSet.put(newsSite, setA);
                             }
-                            // check fot the refilling of the records
+                            // check for the buffer overflow
                             if (mapSiteSet.get(newsSite).size() >= maxPublisherRecording) {
                                 for (ContentOfApiArticle c : mapSiteSet.get(newsSite)) {
                                     // persistence to db
@@ -128,6 +123,7 @@ public class ArticleLoader {
                 log.info("Waiting for the thread pool completing. Waiting time is " + watingTime + " seconds.");
             }
 
+            //save data from buf to the db
             for (String s : mapSiteSet.keySet()) {
                 for (ContentOfApiArticle c : mapSiteSet.get(s)) {
                     // persistence to db
